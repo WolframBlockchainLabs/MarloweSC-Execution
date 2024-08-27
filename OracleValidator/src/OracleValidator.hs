@@ -11,7 +11,7 @@
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
 
-module OracleValidator where
+module OracleDatumReader where
 
 import           GHC.Generics                         (Generic)
 import           Prelude                              (Show (..), IO, print)
@@ -33,7 +33,9 @@ import qualified Types
 -- Defining Datum data structure.
 -----------------------------------------------
 data UTXODatum = UTXODatum
-     { transactionId :: PlutusV2.TxId,
+     { marloweContract :: PlutusV2.TxId,
+       marloweIndex :: Integer,
+       transactionId :: PlutusV2.TxId,
        transactionIndex :: Integer,
        choiceGivenName :: Builtins.BuiltinByteString,
        dataTag :: Builtins.BuiltinByteString,
@@ -52,19 +54,19 @@ type ExpectedRedeemerStructure = [Types.Input]
 -----------------------------------------------
 -- Defining on-chain validator for oracle.
 -----------------------------------------------
-{-# INLINABLE mkOracleValidator #-}
-mkOracleValidator ::UTXODatum -> () -> PlutusV2.ScriptContext -> Bool
-mkOracleValidator datum _ ctx = 
+{-# INLINABLE mkOracleWithDeadlineValidator #-}
+mkOracleWithDeadlineValidator ::UTXODatum -> () -> PlutusV2.ScriptContext -> Bool
+mkOracleWithDeadlineValidator datum _ ctx = 
     traceIfFalse "No conditions met to claim this contract" xorConditions
     where
         xorConditions :: Bool
         xorConditions = (aCondition && not bCondition) || (not aCondition && bCondition)
         
         aCondition :: Bool
-        aCondition = redeemerMatchQ referenceRedeemer
+        aCondition = traceBool "Redeemer Match: True" "Redeemer Match: False" (redeemerMatchQ referenceRedeemer)
 
         bCondition ::Bool
-        bCondition = posixAndSignerValidation
+        bCondition = traceBool "PosixTime and Signer: True" "PosixTime and Signer: False" (posixAndSignerValidation)
         
         -- Access ctx information
         info :: PlutusV2.TxInfo
@@ -130,12 +132,12 @@ instance Scripts.ValidatorTypes OracleWithDeadline where
 -----------------------------------------------
 -- Compilation prelude
 -----------------------------------------------
-oracleValidatorContractInst :: PSU.TypedValidator OracleWithDeadline
-oracleValidatorContractInst = PSU.V2.mkTypedValidator @OracleWithDeadline
-    $$(PlutusTx.compile [|| mkOracleValidator ||])
+oracleWithDeadlineContractInst :: PSU.TypedValidator OracleWithDeadline
+oracleWithDeadlineContractInst = PSU.V2.mkTypedValidator @OracleWithDeadline
+    $$(PlutusTx.compile [|| mkOracleWithDeadlineValidator ||])
     $$(PlutusTx.compile [|| wrap ||])
   where
     wrap = PSU.mkUntypedValidator
 
-oracleValidatorContractValidator :: Validator
-oracleValidatorContractValidator = PSU.V2.validatorScript $ oracleValidatorContractInst
+oracleWithDeadlineContractValidator :: Validator
+oracleWithDeadlineContractValidator = PSU.V2.validatorScript $ oracleWithDeadlineContractInst

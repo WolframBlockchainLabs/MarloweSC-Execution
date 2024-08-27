@@ -53,6 +53,8 @@ writeUnit = writeJSON "scripts/unit.json" ()
 -- Write Datum to deploy oracle
 writeOracleDatum :: IO()
 writeOracleDatum = writeJSON "scripts/oracle.datum" $ OracleValidator.UTXODatum {
+    marloweContract = "03ada6af2b4644d1c59f5fbfb899869f2a4fc8eea6381f6609c9ceeb7e9c6409",
+    marloweIndex = 0,
     transactionId = "ff633400eb84989f16e56e4cce7b7ee547ea595580c0e558c9b6573a834277f3",
     transactionIndex = 0,
     choiceGivenName = "oracle input",
