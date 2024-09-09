@@ -1,0 +1,22 @@
+{
+    "dependencies": {
+		"kafkajs": "^2.2.4",
+		"winston": "^3.13.0",
+		"winston-daily-rotate-file": "^5.0.0",
+		"ws": "^8.17.1",
+		"mongodb": "^6.5.0",
+		"cbor": "^9.0.2",
+		"cbor-sync": "^1.0.4",
+		"dotenv": "^16.4.5"
+    },
+	"scripts": {
+		"build": "babel ./src -d ./dist --verbose"
+	},
+    "devDependencies": {
+		"@babel/cli": "^7.24.7",
+		"@babel/core": "^7.24.7",
+		"@babel/node": "^7.24.7",
+		"@babel/preset-env": "^7.24.7"
+    }
+}
+  
