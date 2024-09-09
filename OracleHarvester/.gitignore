@@ -1,0 +1,9 @@
+dist-newstyle/
+.vscode
+broker1.env
+broker2.env
+dist
+node_modules
+logs
+.env
+package-lock.json
