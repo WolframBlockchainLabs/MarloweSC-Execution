@@ -1,0 +1,86 @@
+services:
+  zookeeper:
+    image: kafka-img
+    container_name: zookeeper
+    ports:
+    - 2181:2181
+    stdin_open: true 
+    tty: true
+    networks:
+      kafka-network:
+        ipv4_address: 173.16.100.10
+    entrypoint: entrypoint.sh
+    command: zookeeper-server-start.sh /opt/wolfram/kafka/config/zookeeper.properties
+
+  broker1:
+    image: kafka-img
+    container_name: broker1
+    ports:
+      - 9092:9092
+    depends_on:
+      - zookeeper
+    stdin_open: true 
+    tty: true
+    env_file:
+      - ./kafka/broker1.env
+    networks:
+      - kafka-network
+    entrypoint: entrypoint.sh
+    command: kafka-server-start.sh /opt/wolfram/kafka/config/server.properties
+
+  broker2:
+    image: kafka-img
+    container_name: broker2
+    ports:
+      - 9093:9092
+    depends_on:
+      - broker1
+    stdin_open: true 
+    tty: true
+    env_file:
+      - ./kafka/broker2.env
+    networks:
+      - kafka-network
+    entrypoint: entrypoint.sh
+    command: kafka-server-start.sh /opt/wolfram/kafka/config/server.properties
+
+  controller:
+    image: kafka-img
+    container_name: controller
+    depends_on:
+      - broker2
+    stdin_open: true 
+    tty: true
+    networks:
+      - kafka-network
+
+  listener:
+    image: listener-img
+    container_name: listener
+    depends_on:
+      - controller
+    stdin_open: true 
+    tty: true
+    volumes:
+      - ./listener/logs:/usr/src/app/logs
+    networks:
+      - kafka-network
+
+  filter:
+    image: filter-img
+    container_name: filter
+    depends_on:
+      - listener
+    stdin_open: true 
+    tty: true
+    volumes:
+      - ./filter/logs:/usr/src/app/logs
+    networks:
+      - kafka-network
+
+networks:
+  kafka-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 173.16.100.0/24

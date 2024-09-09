@@ -1,0 +1,22 @@
+services:
+  kafka:
+    build:
+      context: ./kafka
+      dockerfile: Dockerfile
+    image: kafka-img
+
+  listener:
+    build:
+      context: ./listener
+      dockerfile: Dockerfile
+    image: listener-img
+    depends_on:
+      - kafka
+      
+  filter:
+    build:
+      context: ./filter
+      dockerfile: Dockerfile
+    image: filter-img
+    depends_on:
+      - listener
