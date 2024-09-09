@@ -7,3 +7,7 @@ node_modules
 logs
 .env
 package-lock.json
+marloweFiles
+config.json
+Credentials.wls
+*.logs
