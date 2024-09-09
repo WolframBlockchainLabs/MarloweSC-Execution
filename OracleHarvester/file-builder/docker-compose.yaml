@@ -1,0 +1,13 @@
+services:
+  herodotus:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: herodotus-img
+    container_name: herodotus-container
+    volumes:
+      - ./logs:/usr/src/app/logs
+    stdin_open: true
+    tty: true
+    network:
+      - cardano-oracle_kafka-network
