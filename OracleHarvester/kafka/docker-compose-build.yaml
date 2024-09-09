@@ -1,0 +1,6 @@
+services:
+  kafka:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: kafka-img
