@@ -43,7 +43,7 @@ docker compose -f docker-compose-up.yaml down --rmi all
 
 ### File builder
 #### Prerequisites
-* Docker container witk `marlowe-cli`
+* Docker container with `marlowe-cli`
 * [Marlowe Runtime Server](https://docs.demeter.run/ports/marlowe)
 * MongoDb instance
 * Wolfram Price Feed Infrastructure instance

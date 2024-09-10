@@ -19,7 +19,7 @@ Our solution puts real-time pricing data into a Marlowe smart contract and auton
 
 ## Source code
 
-1) [Plutus Smart Contract](./OracleHarvester/)
+1) [Plutus Smart Contract](./OracleValidator)
 2) [Wolfram Harvester Service](./OracleHarvester)
 
 ## License
