@@ -1,4 +1,6 @@
-# Commands
+# Starting Services
+
+## Listener, Filter and Sync
 
 To build images:
 
@@ -34,4 +36,33 @@ To stop containers and remove images:
 
 ```bash
 docker compose -f docker-compose-up.yaml down --rmi all
+```
+
+## File Builder and Transaction Builder
+
+
+### File builder
+#### Prerequisites
+* Docker container witk `marlowe-cli`
+* [Marlowe Runtime Server](https://docs.demeter.run/ports/marlowe)
+* MongoDb instance
+* Wolfram Price Feed Infrastructure instance
+
+After declaring URI's and credentials in a .env file type:
+
+```bash
+npm install
+npm run build
+cd build
+node app.js
+```
+
+
+### Transaction Builder
+In a system with access to WolframScript, create a `Cron Job` with the following code:
+```Bash
+wolframKernel= ##Path to wolframscript
+txBuilderDir= ## Path to "tx-builder" directory
+
+* * * * * $localStorageDir/txBuilder.sh $txBuilderDir  $wolframKernel  >> /dev/null 2>&1
 ```
