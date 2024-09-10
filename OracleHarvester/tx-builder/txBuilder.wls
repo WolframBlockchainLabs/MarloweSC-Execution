@@ -21,10 +21,9 @@ mongoPort = configFile["MONGO_PORT"];
 dbName = configFile["DATABASE_NAME"];
 collName = configFile["COLLECTION_NAME"];
 
-delphosPath = configFile["DELPHOS_PATH"];
+localStoragePath = configFile["LOCAL_STORAGE_PATH"];
 
 oracleAddress = configFile["ORACLE_ADDRESS"];
-marloweApi = configFile["MARLOWE_API"];
 
 
 client = MongoConnect[<|"Host" -> mongoURI, "Port" -> mongoPort|>];
@@ -76,10 +75,10 @@ declareInputs[
         "TransactionID"->transactionId,
         "Index"-> transactionIndex, 
         "ReferenceScript" -> <|"TransactionID"->"6887579ed3f0e34e6f6949a0827b19b6d0ab7895e4e7f6049985548cc2a76095","Index"->1|>,
-        "Datum" -> File[Evaluate[FileNameJoin[{delphosPath,contractId~~"#"~~ToString@contractIndex,"marloweInput.datum"}]]],
+        "Datum" -> File[Evaluate[FileNameJoin[{localStoragePath,contractId~~"#"~~ToString@contractIndex,"marloweInput.datum"}]]],
         "Redeemer" -> <|
             "Tag" -> "Spend",
-            "Data" -> File[Evaluate[FileNameJoin[{delphosPath,contractId~~"#"~~ToString@contractIndex,"marloweInput.redeemer"}]]]
+            "Data" -> File[Evaluate[FileNameJoin[{localStoragePath,contractId~~"#"~~ToString@contractIndex,"marloweInput.redeemer"}]]]
             |>
         |>;
     oracleInput = <|
@@ -88,12 +87,12 @@ declareInputs[
         "ReferenceScript" -> oracleReferenceScriptInfo["oracleReferenceScript"], 
         "Redeemer" -> <|
             "Tag" -> "Spend", 
-            "Data" -> File[Evaluate[FileNameJoin[{delphosPath,contractId~~"#"~~ToString@contractIndex,"wolframInput.redeemer"}]]]
+            "Data" -> File[Evaluate[FileNameJoin[{localStoragePath,contractId~~"#"~~ToString@contractIndex,"wolframInput.redeemer"}]]]
             |>
         |>;
 
     If[oracleDatumMode == "embed",
-        AppendTo[oracleInput,"Datum" -> File[Evaluate[FileNameJoin[{delphosPath,contractId~~"#"~~ToString@contractIndex,"wolframInput.datum"}]]]];
+        AppendTo[oracleInput,"Datum" -> File[Evaluate[FileNameJoin[{localStoragePath,contractId~~"#"~~ToString@contractIndex,"wolframInput.datum"}]]]];
     ];
     returnList = {marloweInput,oracleInput}
     ]
@@ -109,7 +108,7 @@ declareOutputs[
         "Amount" -> Quantity[marloweLovelace,"CardanoLovelace"],
         "Datum" -> <|
             "Mode" -> "Embed",
-            "Data" -> File[Evaluate[FileNameJoin[{delphosPath,contractId~~"#"~~ToString@contractIndex,"marloweOutput.datum"}]]]
+            "Data" -> File[Evaluate[FileNameJoin[{localStoragePath,contractId~~"#"~~ToString@contractIndex,"marloweOutput.datum"}]]]
             |>
         |>;
     oracleOutput = <|
@@ -164,7 +163,7 @@ mongoUpdateFunc[collection_, txStatement_, result_BlockchainTransaction] :=
  Module[
     {updateObject, valInterval, redeemers, txId, ins, outs},
     valInterval = result["ValidityInterval"];
-    redeemers = Import[File[Evaluate[FileNameJoin[{delphosPath,txStatement["marloweContract"]["transactionId"] ~~ "#" ~~ ToString@txStatement["marloweContract"]["index"],"tx-next.inputs"}]]], "RawJSON"];
+    redeemers = Import[File[Evaluate[FileNameJoin[{localStoragePath,txStatement["marloweContract"]["transactionId"] ~~ "#" ~~ ToString@txStatement["marloweContract"]["index"],"tx-next.inputs"}]]], "RawJSON"];
     txId = result["TransactionID"];
     ins = Map[unpackIn, result["Inputs"]];
     outs = Map[unpackOut, result["Outputs"]];
