@@ -1,4 +1,4 @@
-# Milestone Two
+# Milestone Three
 
 ## Introduction
 The notebook shows the complete operation of the Wolfram Marlowe Smart Contract Execution components. The notebook presents a real use case and reviews both Marlowe and the Wolfram Oracle contract and the constraints imposed for its proper operation.
