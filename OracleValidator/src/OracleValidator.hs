@@ -11,7 +11,7 @@
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
 
-module OracleDatumReader where
+module OracleValidator where
 
 import           GHC.Generics                         (Generic)
 import           Prelude                              (Show (..), IO, print)
@@ -33,9 +33,7 @@ import qualified Types
 -- Defining Datum data structure.
 -----------------------------------------------
 data UTXODatum = UTXODatum
-     { marloweContract :: PlutusV2.TxId,
-       marloweIndex :: Integer,
-       transactionId :: PlutusV2.TxId,
+     { transactionId :: PlutusV2.TxId,
        transactionIndex :: Integer,
        choiceGivenName :: Builtins.BuiltinByteString,
        dataTag :: Builtins.BuiltinByteString,
@@ -54,10 +52,13 @@ type ExpectedRedeemerStructure = [Types.Input]
 -----------------------------------------------
 -- Defining on-chain validator for oracle.
 -----------------------------------------------
-{-# INLINABLE mkOracleWithDeadlineValidator #-}
-mkOracleWithDeadlineValidator ::UTXODatum -> () -> PlutusV2.ScriptContext -> Bool
-mkOracleWithDeadlineValidator datum _ ctx = 
+{-# INLINABLE mkOracleFinalValidator #-}
+mkOracleFinalValidator ::UTXODatum -> () -> PlutusV2.ScriptContext -> Bool
+mkOracleFinalValidator datum _ ctx = 
+    --traceIfFalse "Specified UTXO not in Spent Inputs" txIdInDatum &&
+    --traceIfFalse "Redeemer does not match with expected structure" (redeemerMatch referenceRedeemer)
     traceIfFalse "No conditions met to claim this contract" xorConditions
+    --traceIfFalse (Contexts.txInfoValidRange info) False
     where
         xorConditions :: Bool
         xorConditions = (aCondition && not bCondition) || (not aCondition && bCondition)
@@ -125,19 +126,19 @@ mkOracleWithDeadlineValidator datum _ ctx =
 -----------------------------------------------
 -- Export data type for Datum 
 -----------------------------------------------
-data OracleWithDeadline
-instance Scripts.ValidatorTypes OracleWithDeadline where
-    type instance DatumType OracleWithDeadline = UTXODatum
+data OracleDatum
+instance Scripts.ValidatorTypes OracleDatum where
+    type instance DatumType OracleDatum = UTXODatum
 
 -----------------------------------------------
 -- Compilation prelude
 -----------------------------------------------
-oracleWithDeadlineContractInst :: PSU.TypedValidator OracleWithDeadline
-oracleWithDeadlineContractInst = PSU.V2.mkTypedValidator @OracleWithDeadline
-    $$(PlutusTx.compile [|| mkOracleWithDeadlineValidator ||])
+oracleFinalContractInst :: PSU.TypedValidator OracleDatum
+oracleFinalContractInst = PSU.V2.mkTypedValidator @OracleDatum
+    $$(PlutusTx.compile [|| mkOracleFinalValidator ||])
     $$(PlutusTx.compile [|| wrap ||])
   where
     wrap = PSU.mkUntypedValidator
 
-oracleWithDeadlineContractValidator :: Validator
-oracleWithDeadlineContractValidator = PSU.V2.validatorScript $ oracleWithDeadlineContractInst
+oracleFinalContractValidator :: Validator
+oracleFinalContractValidator = PSU.V2.validatorScript $ oracleFinalContractInst
