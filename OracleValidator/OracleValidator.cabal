@@ -1,5 +1,5 @@
 cabal-version:      2.4
-name:               oracleDatumReader
+name:               OracleValidator
 version:            0.1.0.0
 
 -- A short (one-line) description of the package.
@@ -38,15 +38,15 @@ library
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
     build-depends:   aeson
-                     , base ^>=4.14.3.0
+                     , base
                      , bytestring
                      , containers
                      , data-default
                      , plutus-ledger
                      , cardano-api
                      , plutus-ledger-api
-                     , plutus-script-utils ^>=1.2.0.0
-                             , plutus-tx-plugin
+                     , plutus-script-utils
+                     , plutus-tx-plugin
                      , plutus-tx
                      , serialise
                      , text
