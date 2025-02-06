@@ -6,7 +6,6 @@ module Utils
     ( writeJSON
     , writeUnit
     , writeOracleValidator
-    , writeAlwaysSucceedsValidator
     , writeMarloweRedeemer
     ) where
 
@@ -18,8 +17,8 @@ import qualified Data.ByteString.Lazy  as LBS
 import qualified Data.ByteString.Short as SBS
 import           PlutusTx              (Data (..))
 import qualified PlutusTx
-import           Plutus.V1.Ledger.Api  as V1
-import qualified Plutus.V2.Ledger.Api  as Plutus
+import           PlutusLedgerApi.V1  as V1
+import qualified PlutusLedgerApi.V2  as Plutus
 import qualified Ledger
 import qualified Data.Map.Strict as Map
 import           Data.Map.Strict (Map)
@@ -37,11 +36,11 @@ dataToScriptData (I n)         = ScriptDataNumber n
 dataToScriptData (B bs)        = ScriptDataBytes bs
 
 writeJSON :: PlutusTx.ToData a => FilePath -> a -> IO ()
-writeJSON file = LBS.writeFile file . encode . scriptDataToJson ScriptDataJsonDetailedSchema . dataToScriptData . PlutusTx.toData
+writeJSON file = LBS.writeFile file . encode . scriptDataToJson ScriptDataJsonDetailedSchema . unsafeHashableScriptData . dataToScriptData . PlutusTx.toData
 
 -- compile any validator as .plutus file
 writeValidator :: FilePath -> Ledger.Validator -> IO (Either (FileError ()) ())
-writeValidator file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) file Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . Ledger.unValidatorScript
+writeValidator file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) (File file) Nothing . PlutusScriptSerialised . SBS.toShort . LBS.toStrict . serialise . Ledger.unValidatorScript
 
 -- compile Oracle validator as .plutus file
 writeOracleValidator :: IO (Either (FileError ()) ())

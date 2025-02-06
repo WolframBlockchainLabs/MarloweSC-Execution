@@ -10,6 +10,7 @@
 {-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
+{-# LANGUAGE ViewPatterns          #-}
 
 module OracleValidator where
 
@@ -20,9 +21,9 @@ import qualified PlutusTx.Builtins                    as Builtins
 import           PlutusTx.Prelude                     hiding (Semigroup (..), unless)
 import           Ledger                               hiding (singleton)
 import           Ledger.Typed.Scripts                 as Scripts
-import qualified Plutus.V2.Ledger.Api                 as PlutusV2
-import qualified Plutus.V1.Ledger.Api                 as PlutusV1
-import           Plutus.V2.Ledger.Contexts            as Contexts
+import qualified PlutusLedgerApi.V1                   as PlutusV1
+import qualified PlutusLedgerApi.V2                   as PlutusV2
+import           PlutusLedgerApi.V2.Contexts          as Contexts
 import qualified Plutus.Script.Utils.Typed            as PSU
 import qualified Plutus.Script.Utils.V2.Typed.Scripts as PSU.V2
 import           PlutusTx.AssocMap

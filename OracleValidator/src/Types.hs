@@ -81,9 +81,9 @@ import Control.Newtype.Generics (Newtype)
 import Data.String (IsString (..))
 import GHC.Generics
 -- import Language.Marlowe.Plutus.Semantics.Types.Address
-import qualified Plutus.V1.Ledger.Value as Val
-import Plutus.V2.Ledger.Api (CurrencySymbol (unCurrencySymbol), POSIXTime (..), TokenName (unTokenName))
-import qualified Plutus.V2.Ledger.Api as Ledger (Address (..))
+import qualified PlutusLedgerApi.V1.Value as Val
+import PlutusLedgerApi.V2 (CurrencySymbol (unCurrencySymbol), POSIXTime (..), TokenName (unTokenName))
+import qualified PlutusLedgerApi.V2 as Ledger (Address (..))
 import PlutusTx.AssocMap (Map)
 import qualified PlutusTx.AssocMap as Map
 import PlutusTx.Lift (makeLift)
