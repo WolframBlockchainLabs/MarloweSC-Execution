@@ -1,2 +1,3 @@
 *.skey
 *.address
+/OracleValidator/dist-newstyle*
