@@ -28,7 +28,7 @@ import qualified Plutus.Script.Utils.Typed            as PSU
 import qualified Plutus.Script.Utils.V2.Typed.Scripts as PSU.V2
 import           PlutusTx.AssocMap
 
-import qualified Types
+import qualified MinimalTypes as MTypes
 
 -----------------------------------------------
 -- Defining Datum data structure.
@@ -46,7 +46,7 @@ instance Eq WolframOracleDatum where
 
 PlutusTx.unstableMakeIsData ''WolframOracleDatum
 
-type ExpectedRedeemerStructure = [Types.Input]
+type ExpectedRedeemerStructure = [MTypes.Input]
 
 --------------------------------------------------------
 --
@@ -109,11 +109,11 @@ mkOracleFinalValidator datum _ ctx =
         choiceMatch :: BuiltinData -> Builtins.BuiltinByteString -> Bool
         choiceMatch builtInRedeemerData choiceNameFromDatum = 
             case PlutusV2.fromBuiltinData builtInRedeemerData :: Maybe ExpectedRedeemerStructure of
-                Just ([marloweInput::Types.Input]) -> 
-                    case Types.getInputContent marloweInput of
-                        Types.IChoice choiceId chosenNum -> 
+                Just ([marloweInput::MTypes.Input]) -> 
+                    case MTypes.getInputContent marloweInput of
+                        MTypes.IChoice choiceId chosenNum -> 
                             case choiceId of
-                                Types.ChoiceId choiceName _ -> choiceName == (choiceNameFromDatum)
+                                MTypes.ChoiceId choiceName _ -> choiceName == (choiceNameFromDatum)
                                 _ -> False
                         _ -> False
                 Nothing -> False

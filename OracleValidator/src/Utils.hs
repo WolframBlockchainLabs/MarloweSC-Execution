@@ -26,7 +26,7 @@ import           Data.Map.Strict (Map)
 import qualified PlutusTx.Builtins     as Builtins
 --import PlutusTx.Builtins (stringToBuiltinByteString)
 
-import Types
+import qualified Types
 import OracleValidator
 
 dataToScriptData :: Data -> ScriptData

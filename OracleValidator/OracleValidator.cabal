@@ -30,6 +30,7 @@ library
     exposed-modules:
               OracleValidator,
               Types,
+              MinimalTypes,
               Utils
 
     -- Modules included in this executable, other than Main.
