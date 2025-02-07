@@ -15,7 +15,7 @@
 module OracleValidator where
 
 import           GHC.Generics                         (Generic)
-import           Prelude                              (Show (..), IO, print)
+import qualified Prelude                              as P (Show (..), Eq(..), IO, print)
 import qualified PlutusTx
 import qualified PlutusTx.Builtins                    as Builtins
 import           PlutusTx.Prelude                     hiding (Semigroup (..), unless)
@@ -33,15 +33,18 @@ import qualified Types
 -----------------------------------------------
 -- Defining Datum data structure.
 -----------------------------------------------
-data UTXODatum = UTXODatum
-     { transactionId :: PlutusV2.TxId,
-       transactionIndex :: Integer,
-       choiceGivenName :: Builtins.BuiltinByteString,
+data WolframOracleDatum = WolframOracleDatum
+     { marloweTx :: PlutusV2.TxOutRef,
+       choiceName :: Builtins.BuiltinByteString,
        dataTag :: Builtins.BuiltinByteString,
-       deadlineLimit:: PlutusV2.POSIXTime,
-       beneficiaryAfterDeadline:: PlutusV2.PubKeyHash
-     } deriving Show
-PlutusTx.unstableMakeIsData ''UTXODatum
+       deadline :: PlutusV2.POSIXTime,
+       beneficiary :: PlutusV2.PubKeyHash
+     } deriving (P.Show, P.Eq)
+
+instance Eq WolframOracleDatum where
+    (==) = (==)
+
+PlutusTx.unstableMakeIsData ''WolframOracleDatum
 
 type ExpectedRedeemerStructure = [Types.Input]
 
@@ -54,7 +57,7 @@ type ExpectedRedeemerStructure = [Types.Input]
 -- Defining on-chain validator for oracle.
 -----------------------------------------------
 {-# INLINABLE mkOracleFinalValidator #-}
-mkOracleFinalValidator ::UTXODatum -> () -> PlutusV2.ScriptContext -> Bool
+mkOracleFinalValidator ::WolframOracleDatum -> () -> PlutusV2.ScriptContext -> Bool
 mkOracleFinalValidator datum _ ctx = 
     --traceIfFalse "Specified UTXO not in Spent Inputs" txIdInDatum &&
     --traceIfFalse "Redeemer does not match with expected structure" (redeemerMatch referenceRedeemer)
@@ -76,19 +79,19 @@ mkOracleFinalValidator datum _ ctx =
         
         -- Unpacking datum objects
         transactionID :: PlutusV2.TxId
-        transactionID = transactionId datum
+        transactionID = PlutusV2.txOutRefId (marloweTx datum)
 
         inputIndex :: Integer
-        inputIndex = transactionIndex datum
+        inputIndex = PlutusV2.txOutRefIdx (marloweTx datum)
 
-        choiceName :: Builtins.BuiltinByteString
-        choiceName = choiceGivenName datum
+        internalChoiceName :: Builtins.BuiltinByteString
+        internalChoiceName = choiceName datum
 
         limitTime :: PlutusV1.POSIXTime
-        limitTime = deadlineLimit datum
+        limitTime = deadline datum
 
-        beneficiary :: PlutusV2.PubKeyHash
-        beneficiary = beneficiaryAfterDeadline datum
+        internalBeneficiary :: PlutusV2.PubKeyHash
+        internalBeneficiary = beneficiary datum
 
         -- Check if specified UTXO is present as an Input
         -- txIdInDatum = Contexts.spendsOutput info (transactionId datum) (transactionIndex datum)
@@ -99,7 +102,7 @@ mkOracleFinalValidator datum _ ctx =
         
         -- Definition to check if redeemer matches with choice
         redeemerMatchQ :: Maybe Redeemer -> Bool
-        redeemerMatchQ (Just r) = choiceMatch (getRedeemer r) (choiceName)
+        redeemerMatchQ (Just r) = choiceMatch (getRedeemer r) (internalChoiceName)
         redeemerMatchQ Nothing = False
         
         -- Definition to check if some BuiltinData matches with the defined structure of a Marlowe choice.
@@ -121,7 +124,7 @@ mkOracleFinalValidator datum _ ctx =
 
         posixAndSignerValidation :: Bool
         posixAndSignerValidation = (contains (from (limitTime + 1)) txValidRange)  &&
-                                   (Contexts.txSignedBy info beneficiary)
+                                   (Contexts.txSignedBy info internalBeneficiary)
 
 
 -----------------------------------------------
@@ -129,7 +132,7 @@ mkOracleFinalValidator datum _ ctx =
 -----------------------------------------------
 data OracleDatum
 instance Scripts.ValidatorTypes OracleDatum where
-    type instance DatumType OracleDatum = UTXODatum
+    type instance DatumType OracleDatum = WolframOracleDatum
 
 -----------------------------------------------
 -- Compilation prelude

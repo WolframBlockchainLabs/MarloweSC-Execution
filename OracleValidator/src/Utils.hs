@@ -7,6 +7,7 @@ module Utils
     , writeUnit
     , writeOracleValidator
     , writeMarloweRedeemer
+    , writeDatum
     ) where
 
 import           Cardano.Api
@@ -18,7 +19,7 @@ import qualified Data.ByteString.Short as SBS
 import           PlutusTx              (Data (..))
 import qualified PlutusTx
 import           PlutusLedgerApi.V1  as V1
-import qualified PlutusLedgerApi.V2  as Plutus
+import qualified PlutusLedgerApi.V2  as V2
 import qualified Ledger
 import qualified Data.Map.Strict as Map
 import           Data.Map.Strict (Map)
@@ -48,27 +49,26 @@ writeOracleValidator = writeValidator "scripts/oracleValidator.plutus" $ oracleF
 
 --write validator Datum
 writeDatum :: IO ()
-writeDatum = writeJSON "scripts/oracleDatum.datum" $ OracleValidator.UTXODatum {
-    transactionId = "03ada6af2b4644d1c59f5fbfb899869f2a4fc8eea6381f6609c9ceeb7e9c6409" ,
-    transactionIndex = 0 ,
-    choiceGivenName = "oracle input" ,
+writeDatum = writeJSON "scripts/anotherOracleDatum.datum" $ WolframOracleDatum {
+    marloweTx = V2.TxOutRef  "03ada6af2b4644d1c59f5fbfb899869f2a4fc8eea6381f6609c9ceeb7e9c6409" 0,
+    choiceName = "oracle input" ,
     dataTag = "ADA/USD",
-    deadlineLimit = 1724459986000,
-    beneficiaryAfterDeadline = "f1ca04a98e903273b9f3853b9888a1dc62a704ef0801f04b3e71538b"
+    deadline = 1724459986000,
+    beneficiary = "f1ca04a98e903273b9f3853b9888a1dc62a704ef0801f04b3e71538b"
 }
 
 -- Write Unit to json
 writeUnit :: IO ()
 writeUnit = writeJSON "scripts/unit.json" ()
 
-pubkeyhash::Plutus.PubKeyHash
+pubkeyhash::V2.PubKeyHash
 pubkeyhash = "f1ca04a98e903273b9f3853b9888a1dc62a704ef0801f04b3e71538b"
 
 writeMarloweRedeemer :: IO ()
 writeMarloweRedeemer = 
     do
         let pkc = V1.PubKeyCredential pubkeyhash
-        let addr = Plutus.Address pkc Nothing
+        let addr = V2.Address pkc Nothing
         let party = Types.Address Types.testnet addr
         let name = "oracle input"
         let choiceid = Types.ChoiceId name party
