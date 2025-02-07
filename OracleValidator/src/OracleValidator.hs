@@ -46,19 +46,36 @@ instance Eq WolframOracleDatum where
 
 PlutusTx.unstableMakeIsData ''WolframOracleDatum
 
+-----------------------------------------------
+-- Defining Redeemer data structure.
+-----------------------------------------------
+data WolframOracleRedeemer 
+    = Executable
+    | Reclaim
+    deriving (P.Show, P.Eq)
+
+instance Eq WolframOracleRedeemer where
+    (==) = (==)
+
+PlutusTx.unstableMakeIsData ''WolframOracleRedeemer
+
+-----------------------------------------------
+-- Defining Marlowe expected redeemer
+-----------------------------------------------
+
 type ExpectedRedeemerStructure = [MTypes.Input]
 
 --------------------------------------------------------
 --
--- Oracle validator With datum.
+--Wolfram Oracle Validator
 --
 --------------------------------------------------------
 -----------------------------------------------
 -- Defining on-chain validator for oracle.
 -----------------------------------------------
 {-# INLINABLE mkOracleFinalValidator #-}
-mkOracleFinalValidator ::WolframOracleDatum -> () -> PlutusV2.ScriptContext -> Bool
-mkOracleFinalValidator datum _ ctx = 
+mkOracleFinalValidator ::WolframOracleDatum -> WolframOracleRedeemer -> PlutusV2.ScriptContext -> Bool
+mkOracleFinalValidator datum redeemer ctx = 
     --traceIfFalse "Specified UTXO not in Spent Inputs" txIdInDatum &&
     --traceIfFalse "Redeemer does not match with expected structure" (redeemerMatch referenceRedeemer)
     traceIfFalse "No conditions met to claim this contract" xorConditions
@@ -128,17 +145,18 @@ mkOracleFinalValidator datum _ ctx =
 
 
 -----------------------------------------------
--- Export data type for Datum 
+-- Export data types for Oracle
 -----------------------------------------------
-data OracleDatum
-instance Scripts.ValidatorTypes OracleDatum where
-    type instance DatumType OracleDatum = WolframOracleDatum
+data OracleTypes
+instance Scripts.ValidatorTypes OracleTypes where
+    type instance DatumType OracleTypes = WolframOracleDatum
+    type instance RedeemerType OracleTypes = WolframOracleRedeemer
 
 -----------------------------------------------
 -- Compilation prelude
 -----------------------------------------------
-oracleFinalContractInst :: PSU.TypedValidator OracleDatum
-oracleFinalContractInst = PSU.V2.mkTypedValidator @OracleDatum
+oracleFinalContractInst :: PSU.TypedValidator OracleTypes
+oracleFinalContractInst = PSU.V2.mkTypedValidator @OracleTypes
     $$(PlutusTx.compile [|| mkOracleFinalValidator ||])
     $$(PlutusTx.compile [|| wrap ||])
   where
