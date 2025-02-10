@@ -47,7 +47,7 @@ writeValidator file = writeFileTextEnvelope @(PlutusScript PlutusScriptV2) (File
 
 -- compile Oracle validator as .plutus file
 writeOracleValidator :: IO (Either (FileError ()) ())
-writeOracleValidator = writeValidator "scripts/oracleValidator.plutus" $ oracleFinalContractValidator
+writeOracleValidator = writeValidator "scripts/oracleValidator.plutus" $ oracleFinalContractInst
 
 --write validator Datum
 writeDatum :: IO ()
