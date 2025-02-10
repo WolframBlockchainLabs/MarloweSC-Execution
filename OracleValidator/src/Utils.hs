@@ -8,6 +8,8 @@ module Utils
     , writeOracleValidator
     , writeMarloweRedeemer
     , writeDatum
+    , writeRedeemerExecute
+    , writeRedeemerReclaim
     ) where
 
 import           Cardano.Api
@@ -78,3 +80,9 @@ writeMarloweRedeemer =
         let redeemer = [input]
 
         writeJSON "scripts/oracleInput.redeemer" $ redeemer
+
+writeRedeemerExecute :: IO ()
+writeRedeemerExecute  = writeJSON "scripts/oracleRedeemerExecute.redeemer" $ Execute
+
+writeRedeemerReclaim :: IO ()
+writeRedeemerReclaim  = writeJSON "scripts/oracleRedeemerReclaim.redeemer" $ Reclaim

@@ -31,7 +31,7 @@ import           PlutusTx.AssocMap
 import qualified MinimalTypes as MTypes
 
 -----------------------------------------------
--- Defining Datum data structure.
+-- Defining Datum.
 -----------------------------------------------
 data WolframOracleDatum = WolframOracleDatum
      { marloweTx :: PlutusV2.TxOutRef,
@@ -47,10 +47,10 @@ instance Eq WolframOracleDatum where
 PlutusTx.unstableMakeIsData ''WolframOracleDatum
 
 -----------------------------------------------
--- Defining Redeemer data structure.
+-- Defining Redeemer.
 -----------------------------------------------
 data WolframOracleRedeemer 
-    = Executable
+    = Execute
     | Reclaim
     deriving (P.Show, P.Eq)
 
