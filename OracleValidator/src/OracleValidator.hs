@@ -127,7 +127,7 @@ mkOracleFinalValidator WolframOracleDatum {beneficiary, deadline} Reclaim (Wolfr
       beneficiaryAmongSigners = beneficiary `elem` txInfoSignatories
       afterDeadline = PlutusV1.from (deadline + 1) `contains` txInfoValidRange
 
-mkOracleFinalValidator WolframOracleDatum {choiceName, marloweTx, deadline} Execute (WolframScriptContext WolframTxInfo {txInfoSignatories, txInfoValidRange} _) = 
+mkOracleFinalValidator WolframOracleDatum {choiceName, marloweTx, deadline} Execute (WolframScriptContext WolframTxInfo {txInfoValidRange, txInfoRedeemers} _) = 
     (&&)
       (traceIfFalse "The deadline has passed" beforeDeadline)
       -- We either traces the error message if any, or compare the embedded
