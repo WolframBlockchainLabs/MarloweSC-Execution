@@ -4,9 +4,7 @@
 
 module Utils
     ( writeJSON
-    , writeUnit
     , writeOracleValidator
-    , writeMarloweRedeemer
     , writeDatum
     , writeRedeemerExecute
     , writeRedeemerReclaim
@@ -28,7 +26,6 @@ import           Data.Map.Strict (Map)
 import qualified PlutusTx.Builtins     as Builtins
 --import PlutusTx.Builtins (stringToBuiltinByteString)
 
-import qualified Types
 import OracleValidator
 
 dataToScriptData :: Data -> ScriptData
@@ -59,30 +56,8 @@ writeDatum = writeJSON "scripts/anotherOracleDatum.datum" $ WolframOracleDatum {
     beneficiary = "f1ca04a98e903273b9f3853b9888a1dc62a704ef0801f04b3e71538b"
 }
 
--- Write Unit to json
-writeUnit :: IO ()
-writeUnit = writeJSON "scripts/unit.json" ()
-
-pubkeyhash::V2.PubKeyHash
-pubkeyhash = "f1ca04a98e903273b9f3853b9888a1dc62a704ef0801f04b3e71538b"
-
-writeMarloweRedeemer :: IO ()
-writeMarloweRedeemer = 
-    do
-        let pkc = V1.PubKeyCredential pubkeyhash
-        let addr = V2.Address pkc Nothing
-        let party = Types.Address Types.testnet addr
-        let name = "oracle input"
-        let choiceid = Types.ChoiceId name party
-        let num = 10000
-        let content = Types.IChoice choiceid num
-        let input = Types.NormalInput content
-        let redeemer = [input]
-
-        writeJSON "scripts/oracleInput.redeemer" $ redeemer
-
 writeRedeemerExecute :: IO ()
-writeRedeemerExecute  = writeJSON "scripts/oracleRedeemerExecute.redeemer" $ Execute
+writeRedeemerExecute  = writeJSON "scripts/oracleRedeemerExecute.redeemer" Execute
 
 writeRedeemerReclaim :: IO ()
-writeRedeemerReclaim  = writeJSON "scripts/oracleRedeemerReclaim.redeemer" $ Reclaim
+writeRedeemerReclaim  = writeJSON "scripts/oracleRedeemerReclaim.redeemer" Reclaim
