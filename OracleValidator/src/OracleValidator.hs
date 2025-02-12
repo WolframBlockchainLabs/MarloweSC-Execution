@@ -76,7 +76,7 @@ data WolframTxInfo = WolframTxInfo
         txInfoTxCerts :: BuiltinData,
         txInfoWdrl :: BuiltinData,
         txInfoValidRange :: PlutusV1.POSIXTimeRange,
-        txInfoSignatories :: [PlutusV1.PubKeyHash],
+        txInfoSignatories :: [PlutusV2.PubKeyHash],
         txInfoRedeemers :: Map Contexts.ScriptPurpose Script.Redeemer,
         txInfoData :: BuiltinData,
         txInfoId :: BuiltinData,
@@ -114,6 +114,9 @@ type ExpectedRedeemerStructure = [MTypes.Input]
 --Wolfram Oracle Validator
 --
 --------------------------------------------------------
+{-# INLINEABLE wolframStaticWallet #-}
+wolframStaticWallet :: PlutusV2.PubKeyHash
+wolframStaticWallet = PlutusV2.PubKeyHash ( "f1ca04a98e903273b9f3853b9888a1dc62a704ef0801f04b3e71538b"::BuiltinByteString)
 -----------------------------------------------
 -- Defining on-chain validator for oracle.
 -----------------------------------------------
@@ -128,15 +131,18 @@ mkOracleFinalValidator WolframOracleDatum {beneficiary, deadline} Reclaim (Wolfr
       beneficiaryAmongSigners = beneficiary `elem` txInfoSignatories
       afterDeadline = PlutusV1.from (deadline + 1) `contains` txInfoValidRange
 -- Execute endpoint
-mkOracleFinalValidator WolframOracleDatum {choiceName, marloweTx, deadline} Execute (WolframScriptContext WolframTxInfo {txInfoValidRange, txInfoRedeemers} _) = 
-    (&&)
-      (traceIfFalse "The deadline has passed" beforeDeadline)
+mkOracleFinalValidator WolframOracleDatum {choiceName, marloweTx, deadline} Execute (WolframScriptContext WolframTxInfo {txInfoValidRange, txInfoRedeemers, txInfoSignatories} _) = 
+      traceIfFalse "The deadline has passed" beforeDeadline
+      &&
       ( case eitherErrorOrRedeemerChoiceName of
           Left err -> trace err False
           Right redeemerChoiceName -> traceIfFalse "The choice names don't match" $ redeemerChoiceName == choiceName
-      )
+      ) 
+      &&
+      traceIfFalse "The transaction wasn't signed by the authorized Wolfral wallet" signedByWolframWallet
     where
       beforeDeadline = PlutusV1.to deadline `contains` txInfoValidRange
+      signedByWolframWallet = wolframStaticWallet `elem` txInfoSignatories
       eitherErrorOrRedeemerChoiceName = do
         Script.Redeemer marloweRedeemerData <-
           maybeToEither "The Marlowe input is not spent with a redeemer in the transaction"
