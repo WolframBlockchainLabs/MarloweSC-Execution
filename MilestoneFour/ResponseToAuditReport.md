@@ -10,11 +10,27 @@ We extend our gratitude to the High Assurance Software Group at Tweag for their 
 
 The Tweag team conducted an analysis on the Wolfram Oracle Validator, focusing on the file `OracleValidator.hs`. They made minor adjustments on the codebase to address dependency mismatches.
 
-The Audit was based on documentation and discutions with the Wolfram Team and performed with the `cooked-validators` library for testing.
+The Audit was based on documentation and discutions with the Wolfram team and performed with the `cooked-validators` library for testing.
 
-They organized their findings in three categories (Low, Medium, High) depending on the severity. In total, they report 14 issues including logical flaws, code quality issues, design flaws and unclear specifications. The report includes remediation measures for each issue. Additionally, they delivered a nix enviroment, a test suite and an example of a fixed validator.
+They organized their findings in three categories (Low, Medium, High) depending on the severity. In total, they report 14 issues. The report includes remediation measures for each issue. Additionally, they delivered a nix enviroment, a test suite and an example of a fixed validator.
 
-## 4. Overview of changes to OracleValidator
+## 4. Overview of changes to Oracle Validator
+
+The audit report's main concerns for the Oracle Validator were categorized as follows: 
+
+* Logical flaws
+* Code quality issues
+* Design flaws
+* Unclear specifications
+
+Based on the Audit's report, the primary changes on the Oracle Validator include the following.
+
+* The validator now uses a redeemer to specify which validations should be performed (`Execute` or `Reclaim`)
+* The validator now performs explicit time interval and signature checks.
+* The error message system has been updated to provide more informative feedback.
+* The deserialization of objects has been optimized to reduce resource consumption during execution.
+
+The following section details the specific changes made, along with the commits that implement them.
 
 ## 5. Responses to specific findings
 
@@ -72,7 +88,7 @@ As part of the specification, when the Oracle provides the requested data, it sh
 
 **Solution:**
 
-To address this issue, a *wolframStaticWallet* will be integrated into the codebase to ensure that the signer of the *Execution* transaction is always an authorized address. It is important to note that any modification to this address will also alter the address of the Oracle validator. As a result, all changes or updates will be thoroughly documented and made publicly accessible to users.
+To address this issue, a *wolframStaticWallet* will be integrated into the codebase to ensure that the signer of the *Execution* transaction is always an authorized address. It is important to note that any modification to this address will also alter the address of the Oracle Validator. As a result, all changes or updates will be thoroughly documented and made publicly accessible to users.
 
 The commit [**a7fdc55**](https://github.com/WolframBlockchainLabs/MarloweSC-Execution/commit/a7fdc55a89583c3ccdb08eee9c480696e3d4b7ea) includes the changes mentioned.
 
@@ -82,7 +98,7 @@ The commit [**a7fdc55**](https://github.com/WolframBlockchainLabs/MarloweSC-Exec
 
 **Finding:**
 
-The Oracle validator performs non-exhaustive pattern matching which could lead to unexpected behavior. Specifically, the validator expects a list of one *Marlowe redeemer* but does not handle cases when the redeemer is an empty list or contains two or more elements. 
+The Oracle Validator performs non-exhaustive pattern matching which could lead to unexpected behavior. Specifically, the validator expects a list of one *Marlowe redeemer* but does not handle cases when the redeemer is an empty list or contains two or more elements. 
 
 **Solution:**
 
@@ -118,7 +134,7 @@ A new file names *MinimalTypes.hs* replaces *Types.hs.* Now, only the `Input`str
 
 **Finding:**
 
-The Oracle validator deserializes every element it uses, including the Oracle datum, redeemer, the Marlowe redeemer and script context, even though it only requires some elements from these data structures. This leads in excessive resource consumption, which can be reduced.
+The Oracle Validator deserializes every element it uses, including the Oracle datum, redeemer, the Marlowe redeemer and script context, even though it only requires some elements from these data structures. This leads in excessive resource consumption, which can be reduced.
 
 **Solution:**
 
@@ -130,7 +146,7 @@ The commit [**9064a01**](https://github.com/WolframBlockchainLabs/MarloweSC-Exec
 
 **Finding:**
 
-The Oracle validator uses non-meaningful variable names, making the code difficult to review and follow.
+The Oracle Validator uses non-meaningful variable names, making the code difficult to review and follow.
 
 **Solution:**
 
@@ -142,7 +158,7 @@ Commit [**3b3ccb0**](https://github.com/WolframBlockchainLabs/MarloweSC-Executio
 
 **Finding:** 
 
-The Oracle validator introduces an excessive number of variables derived from data structures such as datums, redeemers, and the script context. This can be avoided by using standard Haskell techniques.
+The Oracle Validator introduces an excessive number of variables derived from data structures such as datums, redeemers, and the script context. This can be avoided by using standard Haskell techniques.
 
 **Solution:**
 
@@ -154,7 +170,7 @@ Commit [**9064a01**](https://github.com/WolframBlockchainLabs/MarloweSC-Executio
 
 **Finding:**
 
-The Oracle validator lacks meaningful error messages for most of failure cases, making it difficult to identify what went wrong.
+The Oracle Validator lacks meaningful error messages for most of failure cases, making it difficult to identify what went wrong.
 
 **Solution:**
 
@@ -190,7 +206,7 @@ Since enforcing the use of an inline datum at execution time would require “si
 
 **Finding:**
 
-Some files contain commented-out code from older versions of the Oracle validator and related functions.
+Some files contain commented-out code from older versions of the Oracle Validator and related functions.
 
 **Solution:**
 
