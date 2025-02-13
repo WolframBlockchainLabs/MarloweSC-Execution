@@ -2,6 +2,12 @@
 
 ## 1. Executive summary
 
+The Wolfram Oracle Validator was audited by Tweag’s High Assurance Software Group, which identified 14 issues categorized by severity (low, medium, high, and critical) and provided targeted remediation measures.
+
+This document summarizes changes implemented in the Oracle Validator. Critical- and high-severity issues were resolved in alignment with the audit team’s recommendations. Nearly all medium- and low-severity findings have also been addressed, with justifications provided for unresolved items. All changes are linked to their respective commits.
+
+The audit scope was limited to the on-chain validator, and no post-remediation re-audit was conducted.
+
 ## 2. Acknowledgment
 
 We extend our gratitude to the High Assurance Software Group at Tweag for their review of the Wolfram Oracle Validator. Their findings, suggestions, and open communication have been key in enhancing this product.
@@ -12,7 +18,7 @@ The Tweag team conducted an analysis on the Wolfram Oracle Validator, focusing o
 
 The Audit was based on documentation and discutions with the Wolfram team and performed with the `cooked-validators` library for testing.
 
-They organized their findings in three categories (Low, Medium, High) depending on the severity. In total, they report 14 issues. The report includes remediation measures for each issue. Additionally, they delivered a nix enviroment, a test suite and an example of a fixed validator.
+They organized their findings in four categories (low, medium, high and critical) depending on the severity. In total, they report 14 issues. The report includes remediation measures for each issue. Additionally, they delivered a nix enviroment, a test suite and an example of a fixed validator.
 
 ## 4. Overview of changes to Oracle Validator
 
@@ -122,7 +128,7 @@ The development environment has been configured to use the *Haskell Language Ser
 
 **Finding:**
 
-A file called *Types.hs* is a copy-pasted version of the datatypes used by Marlowe. The only data structure utilized is the `Input` type which servers as the redeemer for the Marlowe input. The inclusion of this file unnecessarily increases the size of the validator.
+A file called *Types.hs* is a copy-pasted version of the data types used by Marlowe. The only data structure utilized is the `Input` type which serves as the redeemer for the Marlowe input. The inclusion of this file unnecessarily increases the size of the validator.
 
 **Solution:**
 
