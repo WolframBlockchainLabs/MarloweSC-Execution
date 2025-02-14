@@ -2,7 +2,7 @@
 
 ## 1. Executive summary
 
-The Wolfram Oracle Validator was audited by Tweag’s High Assurance Software Group, which identified 14 issues categorized by severity (low, medium, high, and critical) and provided targeted remediation measures.
+The Wolfram Oracle Validator was audited by Tweag’s High Assurance Software Group, which identified 14 issues categorized by severity (lowest, low, medium, high, and critical) and provided targeted remediation measures.
 
 This document summarizes changes implemented in the Oracle Validator. Critical- and high-severity issues were resolved in alignment with the audit team’s recommendations. Nearly all medium- and low-severity findings have also been addressed, with justifications provided for unresolved items. All changes are linked to their respective commits.
 
@@ -18,7 +18,7 @@ The Tweag team conducted an analysis on the Wolfram Oracle Validator, focusing o
 
 The Audit was based on documentation and discutions with the Wolfram team and performed with the `cooked-validators` library for testing.
 
-They organized their findings in four categories (low, medium, high and critical) depending on the severity. In total, they report 14 issues. The report includes remediation measures for each issue. Additionally, they delivered a nix enviroment, a test suite and an example of a fixed validator.
+They organized their findings in five categories (lowest, low, medium, high and critical) depending on the severity. In total, they report 14 issues. The report includes remediation measures for each issue. Additionally, they delivered a nix enviroment, a test suite and an example of a fixed validator.
 
 ## 4. Overview of changes to Oracle Validator
 
